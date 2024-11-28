@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image } from 'react-native';
 import { router } from 'expo-router';
 import { supabase } from '../../lib/supabase';
+import { Picker } from '@react-native-picker/picker';
 
 type Profile = {
   image_path: string;
@@ -15,14 +16,21 @@ type Ad = {
   title: string;
   address: string;
   price: number;
-  profiles: Profile; // Ensure this matches the Supabase relation
+  profiles: Profile;
   subjects: Subject;
-  imageUrl?: string; // For storing the generated image URL
+  imageUrl?: string;
 };
+
+const subjects = [
+  'Matematyka', 'Język obcy', 'Chemia', 'Biologia', 'Fizyka', 'Muzyka', 'Historia',
+  'Plastyka', 'Informatyka', 'Geografia', 'Inne'
+];
 
 const Screen = () => {
   const [ads, setAds] = useState<Ad[]>([]);
+  const [filteredAds, setFilteredAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedSubject, setSelectedSubject] = useState<string>(''); // State for selected subject
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -39,41 +47,55 @@ const Screen = () => {
             name
           )
         `);
-    
+
       if (error) {
         console.error('Error fetching ads:', error);
         setLoading(false);
         return;
       }
-    
+
       if (data) {
-        // Ensure all rows are processed
         const adsWithImages = await Promise.all(
           data.map(async (ad) => {
             const { profiles } = ad;
-    
+
             let imageUrl: string | undefined = undefined;
             if (profiles && profiles.image_path) {
               const { data: imageUrlData } = supabase.storage
-                .from('avatars') // Replace 'images' with your bucket name
+                .from('avatars') // Replace 'avatars' with your bucket name
                 .getPublicUrl(profiles.image_path);
-    
+
               imageUrl = imageUrlData?.publicUrl;
             }
-    
-            return { ...ad, imageUrl }; // Add imageUrl to the ad object
+
+            return { ...ad, imageUrl };
           })
         );
-    
+
         setAds(adsWithImages);
+        setFilteredAds(adsWithImages); // Initially show all ads
       }
-    
+
       setLoading(false);
     };
-    
 
     fetchAds();
   }, []);
+
+  
+  const filterAdsBySubject = (subject: string) => {
+    if (subject === ' ') {
+      setFilteredAds(ads); 
+    } else {
+      const filtered = ads.filter(ad => ad.subjects.name === subject);
+      setFilteredAds(filtered); 
+    }
+  };
+
+  const handleSubjectChange = (subject: string) => {
+    setSelectedSubject(subject);
+    filterAdsBySubject(subject); 
+  };
 
   const renderItem = ({ item }: { item: Ad }) => (
     <View style={styles.card}>
@@ -92,17 +114,32 @@ const Screen = () => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Strona główna</Text>
+
+      <View style={styles.subjectPicker}>
+        <Text style={styles.pickerLabel}>Wybierz przedmiot</Text>
+        <Picker
+          selectedValue={selectedSubject}
+          onValueChange={handleSubjectChange}
+          style={styles.picker}
+        >
+          <Picker.Item label="Wszystkie" value=" " />
+          {subjects.map((subject) => (
+            <Picker.Item key={subject} label={subject} value={subject} />
+          ))}
+        </Picker>
+      </View>
+
       {loading ? (
         <Text>Loading...</Text>
       ) : (
         <FlatList
-          data={ads}
+          data={filteredAds}
           renderItem={renderItem}
           keyExtractor={(item, index) => index.toString()}
           contentContainerStyle={styles.listContainer}
         />
       )}
+
       <TouchableOpacity
         style={styles.floatingButton}
         onPress={() => router.push('/addOffer')}
@@ -118,12 +155,7 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F5F5',
   },
-  header: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    textAlign: 'center',
-    marginVertical: 20,
-  },
+
   listContainer: {
     paddingHorizontal: 10,
   },
@@ -183,6 +215,20 @@ const styles = StyleSheet.create({
     color: 'white',
     fontSize: 24,
     fontWeight: 'bold',
+  },
+  subjectPicker: {
+    marginHorizontal: 20,
+    marginBottom: 15,
+    marginTop:10,
+  },
+  pickerLabel: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    marginBottom: 10,
+  },
+  picker: {
+    height: 60,
+    width: '100%',
   },
 });
 

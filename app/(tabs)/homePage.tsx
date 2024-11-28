@@ -30,7 +30,7 @@ const Screen = () => {
   const [ads, setAds] = useState<Ad[]>([]);
   const [filteredAds, setFilteredAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSubject, setSelectedSubject] = useState<string>(''); // State for selected subject
+  const [selectedSubject, setSelectedSubject] = useState<string>(''); 
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -62,7 +62,7 @@ const Screen = () => {
             let imageUrl: string | undefined = undefined;
             if (profiles && profiles.image_path) {
               const { data: imageUrlData } = supabase.storage
-                .from('avatars') // Replace 'avatars' with your bucket name
+                .from('avatars') 
                 .getPublicUrl(profiles.image_path);
 
               imageUrl = imageUrlData?.publicUrl;
@@ -73,7 +73,7 @@ const Screen = () => {
         );
 
         setAds(adsWithImages);
-        setFilteredAds(adsWithImages); // Initially show all ads
+        setFilteredAds(adsWithImages);
       }
 
       setLoading(false);
@@ -83,18 +83,14 @@ const Screen = () => {
   }, []);
 
   
-  const filterAdsBySubject = (subject: string) => {
+  const handleSubjectChange = (subject: string) => {
+    setSelectedSubject(subject);
     if (subject === ' ') {
       setFilteredAds(ads); 
     } else {
       const filtered = ads.filter(ad => ad.subjects.name === subject);
       setFilteredAds(filtered); 
     }
-  };
-
-  const handleSubjectChange = (subject: string) => {
-    setSelectedSubject(subject);
-    filterAdsBySubject(subject); 
   };
 
   const renderItem = ({ item }: { item: Ad }) => (

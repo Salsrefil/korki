@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, Modal } from 'react-native';
 import { router } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Picker } from '@react-native-picker/picker';
@@ -12,12 +12,17 @@ type Subject = {
   name: string;
 };
 
+type Category = {
+  name: string;
+};
+
 type Ad = {
   title: string;
   address: string;
   price: number;
   profiles: Profile;
   subjects: Subject;
+  scopes: Category;
   imageUrl?: string;
 };
 
@@ -26,11 +31,15 @@ const subjects = [
   'Plastyka', 'Informatyka', 'Geografia', 'Inne'
 ];
 
+const categories = ['Szkoła Podstawowa', 'Technikum/Liceum', 'Szkoła zawodowa', 'Studia'];
+
 const Screen = () => {
   const [ads, setAds] = useState<Ad[]>([]);
   const [filteredAds, setFilteredAds] = useState<Ad[]>([]);
   const [loading, setLoading] = useState(true);
-  const [selectedSubject, setSelectedSubject] = useState<string>(''); 
+  const [selectedSubject, setSelectedSubject] = useState<string>('');
+  const [selectedCategory, setSelectedCategory] = useState<string>('');
+  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchAds = async () => {
@@ -44,6 +53,9 @@ const Screen = () => {
             image_path
           ),
           subjects (
+            name
+          ),
+          scopes (
             name
           )
         `);
@@ -62,7 +74,7 @@ const Screen = () => {
             let imageUrl: string | undefined = undefined;
             if (profiles && profiles.image_path) {
               const { data: imageUrlData } = supabase.storage
-                .from('avatars') 
+                .from('avatars')
                 .getPublicUrl(profiles.image_path);
 
               imageUrl = imageUrlData?.publicUrl;
@@ -82,7 +94,6 @@ const Screen = () => {
     fetchAds();
   }, []);
 
-  
   const handleSubjectChange = (subject: string) => {
     setSelectedSubject(subject);
     if (subject === ' ') {
@@ -93,13 +104,20 @@ const Screen = () => {
     }
   };
 
+  const handleCategoryChange = (category: string) => {
+    setSelectedSubject(category);
+    if (category === ' ') {
+      setFilteredAds(ads); 
+    } else {
+      const filtered = ads.filter(ad => ad.scopes.name === category);
+      setFilteredAds(filtered); 
+    }
+  };
+  
+
   const renderItem = ({ item }: { item: Ad }) => (
     <View style={styles.card}>
-      <Image
-        source={{ uri: item.imageUrl }}
-        style={styles.image}
-        resizeMode="cover"
-      />
+      <Image source={{ uri: item.imageUrl }} style={styles.image} resizeMode="cover" />
       <View style={styles.textContainer}>
         <Text style={styles.name}>{item.subjects.name}</Text>
         <Text style={styles.title}>{item.title}</Text>
@@ -110,20 +128,9 @@ const Screen = () => {
 
   return (
     <View style={styles.container}>
-
-      <View style={styles.subjectPicker}>
-        <Text style={styles.pickerLabel}>Wybierz przedmiot</Text>
-        <Picker
-          selectedValue={selectedSubject}
-          onValueChange={handleSubjectChange}
-          style={styles.picker}
-        >
-          <Picker.Item label="Wszystkie" value=" " />
-          {subjects.map((subject) => (
-            <Picker.Item key={subject} label={subject} value={subject} />
-          ))}
-        </Picker>
-      </View>
+      <TouchableOpacity style={styles.filterButton} onPress={() => setIsModalVisible(true)}>
+        <Text style={styles.filterButtonText}>Show Filters</Text>
+      </TouchableOpacity>
 
       {loading ? (
         <Text>Loading...</Text>
@@ -136,12 +143,46 @@ const Screen = () => {
         />
       )}
 
-      <TouchableOpacity
-        style={styles.floatingButton}
-        onPress={() => router.push('/addOffer')}
-      >
+      <TouchableOpacity style={styles.floatingButton} onPress={() => router.push('/addOffer')}>
         <Text style={styles.buttonText}>+</Text>
       </TouchableOpacity>
+
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={isModalVisible}
+        onRequestClose={() => setIsModalVisible(false)}
+      >
+        <View style={styles.modalContainer}>
+          <View style={styles.modalContent}>
+            <Text style={styles.modalTitle}>Filters</Text>
+
+            <View style={styles.pickerContainer}>
+              <Text style={styles.pickerLabel}>Wybierz przedmiot</Text>
+              <Picker selectedValue={selectedSubject} onValueChange={handleSubjectChange}>
+                <Picker.Item label="Wszystkie" value=" " />
+                {subjects.map((subject) => (
+                  <Picker.Item key={subject} label={subject} value={subject} />
+                ))}
+              </Picker>
+            </View>
+
+            <View style={styles.pickerContainer}>
+              <Text style={styles.pickerLabel}>Wybierz kategorię</Text>
+              <Picker selectedValue={selectedCategory} onValueChange={handleCategoryChange}>
+                <Picker.Item label="Wszystkie" value=" " />
+                {categories.map((category) => (
+                  <Picker.Item key={category} label={category} value={category} />
+                ))}
+              </Picker>
+            </View>
+
+            <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
+              <Text style={styles.closeButtonText}>Close</Text>
+            </TouchableOpacity>
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 };
@@ -150,10 +191,21 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: '#F5F5F5',
+    paddingTop: 50,
   },
-
+  filterButton: {
+    padding: 15,
+    backgroundColor: '#6200EE',
+    alignItems: 'center',
+    margin: 10,
+    borderRadius: 5,
+  },
+  filterButtonText: {
+    color: '#FFF',
+    fontWeight: 'bold',
+  },
   listContainer: {
-    paddingHorizontal: 10,
+    paddingBottom: 100,
   },
   card: {
     flexDirection: 'row',
@@ -202,29 +254,46 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     elevation: 5,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.25,
-    shadowRadius: 3.84,
   },
   buttonText: {
     color: 'white',
     fontSize: 24,
     fontWeight: 'bold',
   },
-  subjectPicker: {
-    marginHorizontal: 20,
+  modalContainer: {
+    flex: 1,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+  },
+  modalContent: {
+    width: 300,
+    backgroundColor: '#FFF',
+    padding: 20,
+    borderRadius: 10,
+    elevation: 5,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
     marginBottom: 15,
-    marginTop:10,
+  },
+  pickerContainer: {
+    marginBottom: 20,
   },
   pickerLabel: {
     fontSize: 16,
-    fontWeight: 'bold',
     marginBottom: 10,
   },
-  picker: {
-    height: 60,
-    width: '100%',
+  closeButton: {
+    backgroundColor: '#6200EE',
+    padding: 10,
+    alignItems: 'center',
+    borderRadius: 5,
+  },
+  closeButtonText: {
+    color: '#FFF',
+    fontWeight: 'bold',
   },
 });
 

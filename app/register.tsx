@@ -68,7 +68,7 @@ export default function Auth() {
       </View>
       <View style={[styles.verticallySpaced, styles.mt20]}>
         <Input
-          label="Surname"
+          label="Last name"
           leftIcon={{ type: 'font-awesome', name: 'user' }}
           onChangeText={(text) => setSurname(text)}
           value={surname}

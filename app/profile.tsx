@@ -3,7 +3,6 @@ import { View, Text, ActivityIndicator, StyleSheet, ScrollView, Image } from 're
 import { supabase } from '../lib/supabase';
 import { useLocalSearchParams } from 'expo-router';
 
-// Define the profile data type
 interface ProfileData {
   name: string;
   last_name: string;
@@ -39,7 +38,6 @@ const Profile = () => {
     fetchProfile();
   }, [userId]);
 
-  // Function to get the full image URL from Supabase Storage
   const getImageUrl = (path: string) => {
     const { data } = supabase.storage.from('avatars').getPublicUrl(path);
     return data.publicUrl;
@@ -65,7 +63,6 @@ const Profile = () => {
   return (
     <ScrollView contentContainerStyle={styles.container}>
       <View style={styles.card}>
-        {/* Display profile image */}
         {profile?.image_path && (
           <Image
             source={{ uri: getImageUrl(profile.image_path) }}

@@ -77,7 +77,6 @@ const UserEmailScreen = () => {
 
   return (
     <ScrollView style={{ padding: 20 }}>
-      {/* User Information Card */}
       <Card containerStyle={styles.card}>
         <Card.Title>User Information</Card.Title>
         <Card.Divider />
@@ -95,7 +94,6 @@ const UserEmailScreen = () => {
         <Input label="Nazwisko" value={lastName ?? 'Ładowanie...'} disabled />
       </Card>
 
-      {/* Actions Card */}
       <Card containerStyle={styles.card}>
         <Card.Title>Actions</Card.Title>
         <Card.Divider />
@@ -111,7 +109,6 @@ const UserEmailScreen = () => {
         />
       </Card>
 
-      {/* Modal for Viewing/Editing Description */}
       <Modal
         animationType="slide"
         transparent={true}

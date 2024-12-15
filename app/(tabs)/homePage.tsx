@@ -17,6 +17,7 @@ type Category = {
 };
 
 type Ad = {
+  id: string;
   title: string;
   address: string;
   price: number;
@@ -46,6 +47,7 @@ const Screen = () => {
       const { data, error } = await supabase
         .from('ads')
         .select(`
+          id,
           title,
           address,
           price,
@@ -116,14 +118,23 @@ const Screen = () => {
   
 
   const renderItem = ({ item }: { item: Ad }) => (
-    <View style={styles.card}>
-      <Image source={{ uri: item.imageUrl }} style={styles.image} resizeMode="cover" />
-      <View style={styles.textContainer}>
-        <Text style={styles.name}>{item.subjects.name}</Text>
-        <Text style={styles.title}>{item.title}</Text>
-        <Text style={styles.price}>{item.price} PLN</Text>
-      </View>
+<TouchableOpacity   onPress={() => {
+    console.log('Navigating to details with ID:', item.id);
+    router.push({ pathname: '/adDetails', params: { id: item.id } });
+  }}>
+  <View style={styles.card}>
+    <Image
+      source={{ uri: item.imageUrl }}
+      style={styles.image}
+      resizeMode="cover"
+    />
+    <View style={styles.textContainer}>
+      <Text style={styles.name}>{item.subjects.name}</Text>
+      <Text style={styles.title}>{item.title}</Text>
+      <Text style={styles.price}>{item.price} PLN</Text>
     </View>
+  </View>
+</TouchableOpacity>
   );
 
   return (

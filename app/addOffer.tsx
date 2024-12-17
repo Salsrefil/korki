@@ -12,8 +12,12 @@ import { supabase } from '../lib/supabase';
 import { Button, Input } from '@rneui/themed';
 import { Picker } from '@react-native-picker/picker';
 import * as Location from 'expo-location';
+import { useNavigation } from '@react-navigation/native';
+import { useRouter } from 'expo-router';
 
 const addOffer = () => {
+  const router = useRouter();
+
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
   const [address, setAddress] = useState('');
@@ -46,13 +50,12 @@ const addOffer = () => {
         Alert.alert('Permission Denied', 'Location permission is required to geocode the address.');
         return;
       }
-  
+
       const locationResults = await Location.geocodeAsync(address);
       if (locationResults.length > 0) {
         const { latitude, longitude } = locationResults[0];
         setLatitude(latitude);
         setLongitude(longitude);
-        console.log(`Latitude: ${latitude}, Longitude: ${longitude}`);
       } else {
         Alert.alert('Error', 'Address not found. Please enter a valid address.');
       }
@@ -61,55 +64,61 @@ const addOffer = () => {
       Alert.alert('Error', 'Failed to geocode the address.');
     }
   };
-  const handleSubmit = async () => {
-    await geocodeAddress(); 
+
+  const validateAndProceedToCheckout = async () => {
+    console.log('validateAndProceedToCheckout: Start');
+  
+    await geocodeAddress();
+  
+    console.log('Geocoding completed:', { latitude, longitude });
+  
     if (!latitude || !longitude) {
+      console.log('Error: Missing latitude or longitude');
       Alert.alert('Error', 'Unable to get coordinates. Please try again.');
       return;
     }
-    
-    const { data: { session } } = await supabase.auth.getSession();
-    const userId = session?.user?.id;
-
-    if (!userId) {
-      Alert.alert('Error', 'User is not logged in.');
+  
+    if (!title || !price || !address || !phoneNumber || !description || !selectedCategory || !selectedSubject) {
+      console.log('Error: Missing required fields', {
+        title,
+        price,
+        address,
+        phoneNumber,
+        description,
+        selectedCategory,
+        selectedSubject,
+      });
+      Alert.alert('Błąd', 'Wszystkie pola muszą być uzupełnione!');
       return;
     }
-
-    let selectedCategoryId = 1;
-    if (selectedCategory === 'Technikum/Liceum') selectedCategoryId = 2;
-    if (selectedCategory === 'Szkoła zawodowa') selectedCategoryId = 3;
-    if (selectedCategory === 'Studia') selectedCategoryId = 4;
-
-    let selectedSubjectId;
-    if (selectedSubject !== null) {
-      selectedSubjectId = subjects.indexOf(selectedSubject);
-    } else {
-      console.error('selectedSubject is null');
-    }
-
+  
+    const formData = {
+      title,
+      price,
+      address,
+      phoneNumber,
+      description,
+      category: selectedCategory,
+      subject: selectedSubject,
+      latitude,
+      longitude,
+    };
+  
+    console.log('Form data prepared:', formData);
+  
     try {
-      const { error } = await supabase.from('ads').insert([
-        {
-          title,
-          scope_id: selectedCategoryId,
-          subject_id: selectedSubjectId,
-          price: parseFloat(price),
-          user_id: userId,
-          description,
-          contact_info: phoneNumber,
-          address,
-          latitude,
-          longitude,
+      console.log('Navigating to Checkout...');
+  
+      router.push({
+        pathname: '/checkout',
+        params: {
+          formData: JSON.stringify(formData),
         },
-      ]);
-
-      if (error) throw error;
-
-      Alert.alert('Success', 'Pomyślnie dodana oferta!');
+      });
+  
+      console.log('Navigation executed successfully');
     } catch (error) {
-      console.error(error);
-      Alert.alert('Error', 'Nie udało się dodać oferty.');
+      console.error('Navigation error:', error);
     }
   };
 
@@ -157,7 +166,11 @@ const addOffer = () => {
         </View>
 
         <View style={styles.verticallySpaced}>
-          <Button title="Add offer" onPress={handleSubmit} buttonStyle={styles.button2} />
+          <Button
+            title="Przejdź do płatności"
+            onPress={validateAndProceedToCheckout}
+            buttonStyle={styles.button2}
+          />
         </View>
       </ScrollView>
     </KeyboardAvoidingView>

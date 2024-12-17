@@ -83,7 +83,7 @@ const addOffer = () => {
 
     let selectedSubjectId;
     if (selectedSubject !== null) {
-      selectedSubjectId = subjects.indexOf(selectedSubject);
+      selectedSubjectId = subjects.indexOf(selectedSubject) + 1;
     } else {
       console.error('selectedSubject is null');
     }

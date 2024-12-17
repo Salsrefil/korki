@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, ScrollView, Image } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, ScrollView, Image, FlatList, TouchableOpacity } from 'react-native';
 import { supabase } from '../lib/supabase';
-import { useLocalSearchParams } from 'expo-router';
+import { router, useLocalSearchParams } from 'expo-router';
 
 interface ProfileData {
   name: string;
@@ -10,9 +10,31 @@ interface ProfileData {
   image_path: string;
 }
 
+interface OfferData {
+  id: string;
+  title: string;
+  subject_id: string;
+}
+
+// Subject names array
+const subjects = [
+  'Matematyka',
+  'Język obcy',
+  'Chemia',
+  'Biologia',
+  'Fizyka',
+  'Muzyka',
+  'Historia',
+  'Plastyka',
+  'Informatyka',
+  'Geografia',
+  'Inne',
+];
+
 const Profile = () => {
   const { userId } = useLocalSearchParams();
   const [profile, setProfile] = useState<ProfileData | null>(null);
+  const [offers, setOffers] = useState<OfferData[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -35,12 +57,33 @@ const Profile = () => {
       }
     };
 
+    const fetchOffers = async () => {
+      try {
+        const { data, error } = await supabase
+          .from('ads')
+          .select('id, title, subject_id')
+          .eq('user_id', userId);
+
+        if (error) throw error;
+
+        setOffers(data || []);
+      } catch (err) {
+        setError((err as Error).message);
+      }
+    };
+
     fetchProfile();
+    fetchOffers();
   }, [userId]);
 
   const getImageUrl = (path: string) => {
     const { data } = supabase.storage.from('avatars').getPublicUrl(path);
     return data.publicUrl;
+  };
+
+  const getSubjectName = (subjectId: string) => {
+    const index = parseInt(subjectId, 10) - 1; 
+    return subjects[index] || 'Unknown Subject'; 
   };
 
   if (loading) {
@@ -92,6 +135,27 @@ const Profile = () => {
           <Text style={styles.sectionValue}>{profile?.description}</Text>
         </View>
       </View>
+
+      <Text style={styles.offersHeader}>User's Offers</Text>
+      <FlatList
+        data={offers}
+        scrollEnabled={false}
+        keyExtractor={(item) => item.id}
+        renderItem={({ item }) => (
+          <TouchableOpacity
+            onPress={() => {
+              router.push({ pathname: '/adDetails', params: { id: item.id } });
+            }}
+          >
+            <View style={styles.offerItem}>
+              <Text style={styles.offerTitle}>{item.title}</Text>
+              <Text style={styles.offerSubject}>Subject: {getSubjectName(item.subject_id)}</Text>
+            </View>
+          </TouchableOpacity>
+        )}
+        ListEmptyComponent={<Text style={styles.noOffersText}>No offers available.</Text>}
+        style={styles.offersList}
+      />
     </ScrollView>
   );
 };
@@ -137,6 +201,7 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.2,
     shadowRadius: 3,
     alignItems: 'center',
+    marginBottom: 20,
   },
   profileImage: {
     width: 120,
@@ -169,6 +234,42 @@ const styles = StyleSheet.create({
     backgroundColor: '#ccc',
     marginVertical: 10,
     width: '100%',
+  },
+  offersHeader: {
+    fontSize: 22,
+    fontWeight: 'bold',
+    marginBottom: 10,
+    color: '#333',
+    alignSelf: 'flex-start',
+  },
+  offersList: {
+    width: '100%',
+  },
+  offerItem: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 8,
+    marginBottom: 10,
+    elevation: 2,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+  },
+  offerTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#333',
+  },
+  offerSubject: {
+    fontSize: 16,
+    color: '#555',
+  },
+  noOffersText: {
+    fontSize: 16,
+    color: '#777',
+    textAlign: 'center',
+    marginTop: 20,
   },
 });
 

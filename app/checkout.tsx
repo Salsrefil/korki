@@ -94,7 +94,7 @@ const Checkout = () => {
       <View style={styles.container}>
         <Text style={styles.header}>Checkout</Text>
         <Text style={styles.infoText}>
-          Płatność za wystawienie ogłoszenia wynosi <Text style={styles.bold}>50 PLN</Text>.
+          Płatność za wystawienie ogłoszenia wynosi <Text style={styles.bold}>50 zł</Text>.
         </Text>
 
         <View style={styles.paymentContainer}>

@@ -17,7 +17,7 @@ import { useRouter } from 'expo-router';
 
 const addOffer = () => {
   const router = useRouter();
-
+  const navigation = useNavigation();
   const [title, setTitle] = useState('');
   const [price, setPrice] = useState('');
   const [address, setAddress] = useState('');
@@ -27,6 +27,10 @@ const addOffer = () => {
   const [selectedSubject, setSelectedSubject] = useState<string | null>(null);
   const [latitude, setLatitude] = useState<number | null>(null);
   const [longitude, setLongitude] = useState<number | null>(null);
+
+  useEffect(() => {
+    navigation.setOptions({ title: 'Dodaj ogłoszenie' });
+  });
 
   const categories = ['Szkoła Podstawowa', 'Technikum/Liceum', 'Szkoła zawodowa', 'Studia'];
   const subjects = [
@@ -57,11 +61,11 @@ const addOffer = () => {
         setLatitude(latitude);
         setLongitude(longitude);
       } else {
-        Alert.alert('Error', 'Address not found. Please enter a valid address.');
+        Alert.alert('Error', 'Nie udało się ustalić lokalizacji. Spróbuj ponownie.');
       }
     } catch (error) {
       console.error('Geocoding Error:', error);
-      Alert.alert('Error', 'Failed to geocode the address.');
+      Alert.alert('Error', 'Nie udało się ustalić lokalizacji. Spróbuj ponownie.');
     }
   };
 
@@ -74,7 +78,7 @@ const addOffer = () => {
   
     if (!latitude || !longitude) {
       console.log('Error: Missing latitude or longitude');
-      Alert.alert('Error', 'Unable to get coordinates. Please try again.');
+      Alert.alert('Error', 'Nie udało się ustalić lokalizacji. Spróbuj ponownie.');
       return;
     }
   
@@ -171,7 +175,7 @@ const addOffer = () => {
         </View>
 
         <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Input label="Phone number" onChangeText={setPhoneNumber} value={phoneNumber} autoCapitalize={'none'} keyboardType="phone-pad" />
+          <Input label="Kontakt" onChangeText={setPhoneNumber} value={phoneNumber} autoCapitalize={'none'} keyboardType="phone-pad" />
         </View>
 
         <View style={[styles.verticallySpaced, styles.mt20]}>

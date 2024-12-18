@@ -78,7 +78,7 @@ const UserEmailScreen = () => {
   return (
     <ScrollView style={{ padding: 20 }}>
       <Card containerStyle={styles.card}>
-        <Card.Title>User Information</Card.Title>
+        <Card.Title>Dane użytkownika</Card.Title>
         <Card.Divider />
         <View style={styles.centered}>
           <Avatar
@@ -95,15 +95,15 @@ const UserEmailScreen = () => {
       </Card>
 
       <Card containerStyle={styles.card}>
-        <Card.Title>Actions</Card.Title>
+        <Card.Title>Opcje</Card.Title>
         <Card.Divider />
         <Button
-          title="View/Edit Profile Description"
+          title="Wyświetl/edytuj opis profilu"
           onPress={() => setModalVisible(true)}
           buttonStyle={styles.button}
         />
         <Button
-          title="Sign Out"
+          title="Wyloguj się"
           onPress={handleSignOut}
           buttonStyle={[styles.button, { backgroundColor: '#d9534f' }]}
         />
@@ -116,17 +116,17 @@ const UserEmailScreen = () => {
         onRequestClose={() => setModalVisible(false)}
       >
         <View style={styles.modalView}>
-          <Text style={styles.modalTitle}>Profile Description</Text>
+          <Text style={styles.modalTitle}>Opis profilu</Text>
           <Input
-            placeholder="Enter your profile description"
+            placeholder="Wprowadź opis profilu"
             multiline
             numberOfLines={4}
             value={description ?? ''}
             onChangeText={setDescription}
           />
           <View style={styles.modalButtons}>
-            <Button title="Save" onPress={handleUpdateDescription} buttonStyle={styles.modalButton} />
-            <Button title="Cancel" onPress={() => setModalVisible(false)} buttonStyle={styles.modalButton} type="outline" />
+            <Button title="Zapisz" onPress={handleUpdateDescription} buttonStyle={styles.modalButton} />
+            <Button title="Zamknij" onPress={() => setModalVisible(false)} buttonStyle={styles.modalButton} type="outline" />
           </View>
         </View>
       </Modal>

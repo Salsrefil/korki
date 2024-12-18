@@ -59,7 +59,7 @@ export default function MapScreen() {
             key={location.id}
             coordinate={{ latitude: location.latitude, longitude: location.longitude }}
             title={location.title}
-            description={`Cena: $${location.price}`}
+            description={`Cena: ${location.price} zł / 60 min`}
           />
         ))}
       </MapView>

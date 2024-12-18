@@ -1,9 +1,11 @@
 import React, { useEffect, useState } from 'react';
 import { View, Text, StyleSheet, ScrollView, Image, TouchableOpacity, ActivityIndicator, TextInput, Modal, Button } from 'react-native';
 import { useLocalSearchParams, router } from 'expo-router';
+import { useNavigation } from 'expo-router';
 import { supabase } from '../lib/supabase';
 
 const AdDetails = () => {
+  const navigation = useNavigation();
   const { id } = useLocalSearchParams();
   const [ad, setAd] = useState(null);
   const [user, setUser] = useState(null);
@@ -15,6 +17,7 @@ const AdDetails = () => {
   const [modalVisible, setModalVisible] = useState(false); // Modal
 
   useEffect(() => {
+    navigation.setOptions({ title: 'Ogłoszenie' });
     fetchAdDetails();
     fetchReviews();
   }, [id]);

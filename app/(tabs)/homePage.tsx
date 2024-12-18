@@ -123,7 +123,7 @@ const Screen = () => {
   const renderItem = ({ item }: { item: Ad }) => (
 <TouchableOpacity   onPress={() => {
     console.log('Navigating to details with ID:', item.id);
-    router.push({ pathname: '/adDetails', params: { id: item.id } });
+    router.push({ pathname: '/adDetails', params: { id: item.id, title: 'Ogłoszenie' } });
   }}>
   <View style={styles.card}>
     <Image

@@ -146,7 +146,8 @@ const styles = StyleSheet.create({
     marginBottom: 15,
   },
   button: {
-    borderRadius: 20,
+    borderRadius: 5,
+    backgroundColor: '#6200EE',
     marginVertical: 10,
   },
   modalView: {
@@ -173,7 +174,7 @@ const styles = StyleSheet.create({
     marginTop: 10,
   },
   modalButton: {
-    borderRadius: 20,
+    borderRadius: 5,
     width: 100,
   },
 });

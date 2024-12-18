@@ -129,6 +129,7 @@ export default function Avatar({ url, size = 150, onUpload }: Props) {
           title={uploading ? 'Uploading ...' : 'Upload'}
           onPress={uploadAvatar}
           disabled={uploading}
+          color="#6200EE"
         />
       </View>
     </View>

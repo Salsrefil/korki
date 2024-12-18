@@ -16,7 +16,12 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.salsrefil.korki"
+      "package": "com.salsrefil.korki",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyCjBu7520YTlBWrx8Gz6_UyolW6o11po54"
+        }
+      }
     },
     "web": {
       "bundler": "metro",

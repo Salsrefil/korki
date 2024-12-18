@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import MapView, { Marker } from 'react-native-maps';
+import { PROVIDER_GOOGLE } from 'react-native-maps';
 import { StyleSheet, View, Alert } from 'react-native';
 import { supabase } from '../../lib/supabase'; 
 
@@ -42,6 +43,7 @@ export default function MapScreen() {
   return (
     <View style={styles.container}>
       <MapView
+        provider={PROVIDER_GOOGLE}
         style={styles.map}
         initialRegion={{
           latitude: 52.237049,

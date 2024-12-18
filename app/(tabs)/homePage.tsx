@@ -134,7 +134,7 @@ const Screen = () => {
     <View style={styles.textContainer}>
       <Text style={styles.name}>{item.subjects.name}</Text>
       <Text style={styles.title}>{item.title}</Text>
-      <Text style={styles.price}>{item.price} PLN</Text>
+      <Text style={styles.price}>{item.price} zł / 60min</Text>
     </View>
   </View>
 </TouchableOpacity>
@@ -143,11 +143,11 @@ const Screen = () => {
   return (
     <View style={styles.container}>
       <TouchableOpacity style={styles.filterButton} onPress={() => setIsModalVisible(true)}>
-        <Text style={styles.filterButtonText}>Show Filters</Text>
+        <Text style={styles.filterButtonText}>Pokaż filtry</Text>
       </TouchableOpacity>
 
       {loading ? (
-        <Text>Loading...</Text>
+        <Text>Ładowanie...</Text>
       ) : (
         <FlatList
           data={filteredAds}
@@ -169,7 +169,7 @@ const Screen = () => {
       >
         <View style={styles.modalContainer}>
           <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>Filters</Text>
+            <Text style={styles.modalTitle}>Filtry</Text>
 
             <View style={styles.pickerContainer}>
               <Text style={styles.pickerLabel}>Wybierz przedmiot</Text>
@@ -192,7 +192,7 @@ const Screen = () => {
             </View>
 
             <TouchableOpacity style={styles.closeButton} onPress={() => setIsModalVisible(false)}>
-              <Text style={styles.closeButtonText}>Close</Text>
+              <Text style={styles.closeButtonText}>Zamknij</Text>
             </TouchableOpacity>
           </View>
         </View>

@@ -103,6 +103,19 @@ const UserEmailScreen = () => {
           buttonStyle={styles.button}
         />
         <Button
+          title="Moje ogłoszenia"
+          onPress={() => router.push('/moje-ogloszenia')}
+          buttonStyle={styles.button}
+        />
+        <Button
+          title="Regulamin"
+          onPress={() => router.push('/termsOfService')}
+          buttonStyle={styles.button}
+        />
+      </Card>
+
+      <Card containerStyle={styles.card}>
+        <Button
           title="Wyloguj się"
           onPress={handleSignOut}
           buttonStyle={[styles.button, { backgroundColor: '#d9534f' }]}

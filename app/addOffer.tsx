@@ -14,6 +14,7 @@ import { Picker } from '@react-native-picker/picker';
 import * as Location from 'expo-location';
 import { useNavigation } from '@react-navigation/native';
 import { useRouter } from 'expo-router';
+import { TextInput } from 'react-native';
 
 const addOffer = () => {
   const router = useRouter();
@@ -142,9 +143,9 @@ const addOffer = () => {
   return (
     <KeyboardAvoidingView style={{ flex: 1 }} behavior={Platform.OS === 'ios' ? 'padding' : 'height'} keyboardVerticalOffset={80}>
       <ScrollView style={{ padding: 20, paddingBottom: 20 }}>
-        <Text style={{ fontSize: 20 }}>Dodaj ogłoszenie:</Text>
+        <Text style={styles.header}>Dodaj ogłoszenie:</Text>
 
-        <View style={[styles.verticallySpaced, styles.mt20]}>
+        <View style={styles.formGroup}>
           <Picker selectedValue={selectedCategory} onValueChange={(itemValue) => setSelectedCategory(itemValue)} style={styles.picker}>
             <Picker.Item label="Wybierz szkołę" value={null} />
             {categories.map((category, index) => (
@@ -153,7 +154,7 @@ const addOffer = () => {
           </Picker>
         </View>
 
-        <View style={[styles.verticallySpaced, styles.mt20]}>
+        <View style={styles.formGroup}>
           <Picker selectedValue={selectedSubject} onValueChange={(itemValue) => setSelectedSubject(itemValue)} style={styles.picker}>
             <Picker.Item label="Wybierz przedmiot" value={null} />
             {subjects.map((subject, index) => (
@@ -162,56 +163,103 @@ const addOffer = () => {
           </Picker>
         </View>
 
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Input label="Tytuł oferty" onChangeText={(text) => setTitle(text)} value={title} autoCapitalize={'none'} />
+        <View style={styles.formGroup}>
+          <Input label="Tytuł oferty" onChangeText={(text) => setTitle(text)} value={title} />
         </View>
 
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Input label="Adres" onChangeText={(text) => setAddress(text)} value={address} autoCapitalize={'none'} />
+        <View style={styles.formGroup}>
+          <Input label="Cena (zł / 60 min)" onChangeText={setPrice} value={price} autoCapitalize={'none'} keyboardType="phone-pad" />
         </View>
 
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Input label="Cena" onChangeText={setPrice} value={price} autoCapitalize={'none'} keyboardType="phone-pad" />
+        <View style={styles.formGroup}>
+          <Input label="Adres" onChangeText={(text) => setAddress(text)} value={address} />
         </View>
 
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Input label="Kontakt" onChangeText={setPhoneNumber} value={phoneNumber} autoCapitalize={'none'} keyboardType="phone-pad" />
-        </View>
-
-        <View style={[styles.verticallySpaced, styles.mt20]}>
-          <Input label="Opis" onChangeText={setDescription} value={description} autoCapitalize={'none'} multiline={true} numberOfLines={4} />
-        </View>
-
-        <View style={styles.verticallySpaced}>
-          <Button
-            title="Przejdź do płatności"
-            onPress={validateAndProceedToCheckout}
-            buttonStyle={styles.button2}
+        <View style={styles.formGroup}>
+          <Input
+            label="Kontakt"
+            onChangeText={(text) => setPhoneNumber(text)}
+            value={phoneNumber}
+            placeholder="Tu podaj dane kontaktowe"
+            multiline
+            numberOfLines={6}
+            style={styles.textareaSmall}
+            scrollEnabled
           />
         </View>
+
+        <View style={styles.formGroup}>
+          <Input
+            label="Opis"
+            onChangeText={(text) => setDescription(text)}
+            placeholder="Tu wprowadź opis ogłoszenia"
+            value={description}
+            multiline
+            numberOfLines={10}
+            style={styles.textareaLarge}
+            scrollEnabled
+          />
+        </View>
+
+        <View style={styles.formGroup}>
+  <Button
+    title="Przejdź do płatności"
+    onPress={() => {
+      console.log('Button pressed'); // Log, aby sprawdzić, czy przycisk reaguje
+      validateAndProceedToCheckout();
+    }}
+    buttonStyle={styles.button}
+  />
+</View>
       </ScrollView>
     </KeyboardAvoidingView>
   );
 };
 
 const styles = StyleSheet.create({
-  verticallySpaced: {
-    paddingTop: 4,
-    paddingBottom: 4,
-    alignSelf: 'stretch',
+  header: {
+    fontSize: 24,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#6200EE',
   },
-  mt20: {
-    marginTop: 20,
+  formGroup: {
+    marginBottom: 20,
   },
   picker: {
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 5,
-    marginBottom: 20,
+    backgroundColor: '#f9f9f9',
+    paddingVertical: 10,
+    paddingHorizontal: 15,
   },
-  button2: {
-    borderRadius: 20,
-    marginBottom: 20,
+  textareaSmall: {
+    minHeight: 100,
+    textAlignVertical: 'top', // Ustawienie tekstu na górze
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    backgroundColor: '#f9f9f9',
+  },
+  textareaLarge: {
+    minHeight: 240,
+    textAlignVertical: 'top', // Ustawienie tekstu na górze
+    borderColor: '#ccc',
+    borderWidth: 1,
+    borderRadius: 5,
+    padding: 10,
+    backgroundColor: '#f9f9f9',
+  },
+  button: {
+    backgroundColor: '#6200EE',
+    borderRadius: 5,
+    paddingVertical: 12,
+    paddingHorizontal: 20,
+  },
+  scrollable: {
+    maxHeight: 200, // ograniczenie wysokości dla przewijania
   },
 });
 

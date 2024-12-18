@@ -100,7 +100,13 @@ const AdDetails = () => {
         <Text style={styles.title}>{ad.title}</Text>
         <Text style={styles.price}>{ad.price} zł / 60min</Text>
       </View>
+
       <View style={styles.section}><Text>{ad.description}</Text></View>
+
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Kontakt</Text>
+        <Text>{ad.contact_info}</Text>
+      </View>
 
       {/* Przycisk otwierający modal */}
       <View style={styles.section}>

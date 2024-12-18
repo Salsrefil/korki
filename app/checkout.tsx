@@ -66,7 +66,7 @@ const Checkout = () => {
         {
           title: formData.title,
           scope_id: ['Szkoła Podstawowa', 'Technikum/Liceum', 'Szkoła zawodowa', 'Studia'].indexOf(formData.category) + 1,
-          subject_id: ['Matematyka', 'Język obcy', 'Chemia', 'Biologia', 'Fizyka', 'Muzyka', 'Historia', 'Plastyka', 'Informatyka', 'Geografia', 'Inne'].indexOf(formData.subject),
+          subject_id: formData.subject,
           price: parseFloat(formData.price),
           user_id: userId,
           description: formData.description,

@@ -91,6 +91,18 @@ const addOffer = () => {
       Alert.alert('Błąd', 'Wszystkie pola muszą być uzupełnione!');
       return;
     }
+
+    let selectedCategoryId = 1;
+    if (selectedCategory === 'Technikum/Liceum') selectedCategoryId = 2;
+    if (selectedCategory === 'Szkoła zawodowa') selectedCategoryId = 3;
+    if (selectedCategory === 'Studia') selectedCategoryId = 4;
+
+    let selectedSubjectId;
+    if (selectedSubject !== null) {
+      selectedSubjectId = subjects.indexOf(selectedSubject) + 1;
+    } else {
+      console.error('selectedSubject is null');
+    }
   
     const formData = {
       title,
@@ -99,13 +111,14 @@ const addOffer = () => {
       phoneNumber,
       description,
       category: selectedCategory,
-      subject: selectedSubject,
+      subject: selectedSubjectId,
       latitude,
       longitude,
     };
   
     console.log('Form data prepared:', formData);
-  
+
+
     try {
       console.log('Navigating to Checkout...');
   

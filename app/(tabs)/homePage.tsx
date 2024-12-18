@@ -43,77 +43,80 @@ const Screen = () => {
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
   useEffect(() => {
-    const fetchAds = async () => {
-      const { data, error } = await supabase
-        .from('ads')
-        .select(`
-          id,
-          title,
-          address,
-          price,
-          profiles (
-            image_path
-          ),
-          subjects (
-            name
-          ),
-          scopes (
-            name
-          )
-        `);
-
-      if (error) {
-        console.error('Error fetching ads:', error);
-        setLoading(false);
-        return;
-      }
-
-      if (data) {
-        const adsWithImages = await Promise.all(
-          data.map(async (ad) => {
-            const { profiles } = ad;
-
-            let imageUrl: string | undefined = undefined;
-            if (profiles && profiles.image_path) {
-              const { data: imageUrlData } = supabase.storage
-                .from('avatars')
-                .getPublicUrl(profiles.image_path);
-
-              imageUrl = imageUrlData?.publicUrl;
-            }
-
-            return { ...ad, imageUrl };
-          })
-        );
-
-        setAds(adsWithImages);
-        setFilteredAds(adsWithImages);
-      }
-
-      setLoading(false);
-    };
-
     fetchAds();
   }, []);
 
+  const fetchAds = async () => {
+    const { data, error } = await supabase
+      .from('ads')
+      .select(`
+        id,
+        title,
+        address,
+        price,
+        profiles (
+          image_path
+        ),
+        subjects (
+          name
+        ),
+        scopes (
+          name
+        )
+      `);
+
+    if (error) {
+      console.error('Error fetching ads:', error);
+      setLoading(false);
+      return;
+    }
+
+    if (data) {
+      const adsWithImages = await Promise.all(
+        data.map(async (ad) => {
+          const { profiles } = ad;
+
+          let imageUrl: string | undefined = undefined;
+          if (profiles && profiles.image_path) {
+            const { data: imageUrlData } = supabase.storage
+              .from('avatars')
+              .getPublicUrl(profiles.image_path);
+
+            imageUrl = imageUrlData?.publicUrl;
+          }
+
+          return { ...ad, imageUrl };
+        })
+      );
+      console.log("hej")
+      setAds(adsWithImages);
+      setFilteredAds(adsWithImages);
+    }
+
+    setLoading(false);
+  };
+  const filterAds = (subject: string, category: string) => {
+    let filtered = ads;
+  
+    if (subject && subject !== ' ') {
+      filtered = filtered.filter((ad) => ad.subjects.name === subject);
+    }
+  
+    if (category && category !== ' ') {
+      filtered = filtered.filter((ad) => ad.scopes.name === category);
+    }
+  
+    setFilteredAds(filtered);
+  };
+  
   const handleSubjectChange = (subject: string) => {
     setSelectedSubject(subject);
-    if (subject === ' ') {
-      setFilteredAds(ads); 
-    } else {
-      const filtered = ads.filter(ad => ad.subjects.name === subject);
-      setFilteredAds(filtered); 
-    }
+    filterAds(subject, selectedCategory)
   };
 
   const handleCategoryChange = (category: string) => {
-    setSelectedSubject(category);
-    if (category === ' ') {
-      setFilteredAds(ads); 
-    } else {
-      const filtered = ads.filter(ad => ad.scopes.name === category);
-      setFilteredAds(filtered); 
-    }
+    setSelectedCategory(category);
+    filterAds(selectedSubject, category);
   };
   
 

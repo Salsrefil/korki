@@ -63,7 +63,7 @@ const Profile = () => {
         .from('ads')
         .select('id, title, subject_id')
         .eq('user_id', userId)
-        .neq('status', 'archive');
+        .or('status.is.null,status.neq.archive');
 
         if (error) throw error;
 

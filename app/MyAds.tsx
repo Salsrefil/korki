@@ -3,12 +3,18 @@ import { StyleSheet, View, Text, ScrollView, Alert, BackHandler } from 'react-na
 import { supabase } from '../lib/supabase';
 import { Button, Card } from '@rneui/themed';
 import { useRouter, useFocusEffect, useLocalSearchParams } from 'expo-router';
+import { useNavigation } from 'expo-router';
 
 const MyAds = () => {
+  const navigation = useNavigation();
   const { from } = useLocalSearchParams(); // `from` indicates the previous view
   const [ads, setAds] = useState([]);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+    useEffect(() => {
+      navigation.setOptions({ title: 'Moje ogłoszenia' });
+    }, []);
 
   // Fetch ads
   const fetchAds = useCallback(async () => {

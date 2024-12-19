@@ -108,6 +108,11 @@ const AdDetails = () => {
         <Text>{ad.contact_info}</Text>
       </View>
 
+      <View style={styles.section}>
+        <Text style={styles.sectionTitle}>Adres</Text>
+        <Text>{ad.address}</Text>
+      </View>
+
       {/* Przycisk otwierający modal */}
       <View style={styles.section}>
         <TouchableOpacity style={styles.button} onPress={() => setModalVisible(true)}>

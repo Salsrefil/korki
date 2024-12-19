@@ -60,9 +60,10 @@ const Profile = () => {
     const fetchOffers = async () => {
       try {
         const { data, error } = await supabase
-          .from('ads')
-          .select('id, title, subject_id')
-          .eq('user_id', userId);
+        .from('ads')
+        .select('id, title, subject_id')
+        .eq('user_id', userId)
+        .neq('status', 'archive');
 
         if (error) throw error;
 
@@ -90,7 +91,7 @@ const Profile = () => {
     return (
       <View style={styles.loadingContainer}>
         <ActivityIndicator size="large" color="#007AFF" />
-        <Text style={styles.loadingText}>Loading profile...</Text>
+        <Text style={styles.loadingText}>Ładowanie...</Text>
       </View>
     );
   }
@@ -114,29 +115,29 @@ const Profile = () => {
           />
         )}
 
-        <Text style={styles.headerText}>User Profile</Text>
+        <Text style={styles.headerText}>Profil</Text>
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Name</Text>
+          <Text style={styles.sectionTitle}>Imię</Text>
           <Text style={styles.sectionValue}>{profile?.name}</Text>
         </View>
 
         <View style={styles.divider} />
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Last Name</Text>
+          <Text style={styles.sectionTitle}>Nazwisko</Text>
           <Text style={styles.sectionValue}>{profile?.last_name}</Text>
         </View>
 
         <View style={styles.divider} />
 
         <View style={styles.section}>
-          <Text style={styles.sectionTitle}>Description</Text>
+          <Text style={styles.sectionTitle}>Opis</Text>
           <Text style={styles.sectionValue}>{profile?.description}</Text>
         </View>
       </View>
 
-      <Text style={styles.offersHeader}>User's Offers</Text>
+      <Text style={styles.offersHeader}>Oferty użytkownika</Text>
       <FlatList
         data={offers}
         scrollEnabled={false}
@@ -149,7 +150,7 @@ const Profile = () => {
           >
             <View style={styles.offerItem}>
               <Text style={styles.offerTitle}>{item.title}</Text>
-              <Text style={styles.offerSubject}>Subject: {getSubjectName(item.subject_id)}</Text>
+              <Text style={styles.offerSubject}>Przedmiot: {getSubjectName(item.subject_id)}</Text>
             </View>
           </TouchableOpacity>
         )}

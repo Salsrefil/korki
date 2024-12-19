@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet, FlatList, Image, Modal } from
 import { router } from 'expo-router';
 import { supabase } from '../../lib/supabase';
 import { Picker } from '@react-native-picker/picker';
+import { useFocusEffect } from '@react-navigation/native';
+import { useCallback } from 'react';
 
 type Profile = {
   image_path: string;
@@ -42,28 +44,31 @@ const Screen = () => {
   const [selectedCategory, setSelectedCategory] = useState<string>('');
   const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
 
-  useEffect(() => {
-    fetchAds();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      fetchAds();
+    }, [])
+  );
 
   const fetchAds = async () => {
     const { data, error } = await supabase
-      .from('ads')
-      .select(`
-        id,
-        title,
-        address,
-        price,
-        profiles (
-          image_path
-        ),
-        subjects (
-          name
-        ),
-        scopes (
-          name
-        )
-      `);
+    .from('ads')
+    .select(`
+      id,
+      title,
+      address,
+      price,
+      profiles (
+        image_path
+      ),
+      subjects (
+        name
+      ),
+      scopes (
+        name
+      )
+    `)
+    .or('status.is.null,status.neq.archive');
 
     if (error) {
       console.error('Error fetching ads:', error);
@@ -133,6 +138,7 @@ const Screen = () => {
     />
     <View style={styles.textContainer}>
       <Text style={styles.name}>{item.subjects.name}</Text>
+      <Text style={styles.title}>{item.scopes.name}</Text>
       <Text style={styles.title}>{item.title}</Text>
       <Text style={styles.price}>{item.price} zł / 60min</Text>
     </View>

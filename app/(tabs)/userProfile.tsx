@@ -104,7 +104,7 @@ const UserEmailScreen = () => {
         />
         <Button
           title="Moje ogłoszenia"
-          onPress={() => router.push('/moje-ogloszenia')}
+          onPress={() => router.push({ pathname: '/MyAds', params: { from: 'userProfile' } })}
           buttonStyle={styles.button}
         />
         <Button

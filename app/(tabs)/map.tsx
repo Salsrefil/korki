@@ -3,6 +3,7 @@ import MapView, { Marker } from 'react-native-maps';
 import { PROVIDER_GOOGLE } from 'react-native-maps';
 import { StyleSheet, View, Alert } from 'react-native';
 import { supabase } from '../../lib/supabase'; 
+import { router } from 'expo-router';
 
 type Location = {
   id: number;
@@ -60,6 +61,10 @@ export default function MapScreen() {
             coordinate={{ latitude: location.latitude, longitude: location.longitude }}
             title={location.title}
             description={`Cena: ${location.price} zł / 60 min`}
+              onPress={() => {
+                console.log('Navigating to details with ID:', location.id);
+                router.push({ pathname: '/adDetails', params: { id: location.id } });
+              }}
           />
         ))}
       </MapView>

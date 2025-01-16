@@ -104,13 +104,24 @@ const AdDetails = () => {
       <View style={styles.section}><Text>{ad.description}</Text></View>
 
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Kontakt</Text>
-        <Text>{ad.contact_info}</Text>
+        <Text style={styles.sectionTitle}>Forma prowadzenia</Text>
+        <Text>
+          {(ad.isRemote || ad.isInPerson) ?
+            ad.isRemote && ad.isInPerson ? 'Zdalne, Stacjonarne' : ad.isRemote ? 'Zdalne' : 'Stacjonarne'
+            : 'Stacjonarne'}
+        </Text>
       </View>
 
+      {(ad.isInPerson || (!ad.isRemote && !ad.isInPerson)) && (
+        <View style={styles.section}>
+          <Text style={styles.sectionTitle}>Adres</Text>
+          <Text>{ad.address}</Text>
+        </View>
+      )}
+
       <View style={styles.section}>
-        <Text style={styles.sectionTitle}>Adres</Text>
-        <Text>{ad.address}</Text>
+        <Text style={styles.sectionTitle}>Kontakt</Text>
+        <Text>{ad.contact_info}</Text>
       </View>
 
       {/* Przycisk otwierający modal */}
@@ -359,6 +370,5 @@ const styles = StyleSheet.create({
     borderRadius: 5,
   },
 });
-
 
 export default AdDetails;

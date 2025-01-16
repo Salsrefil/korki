@@ -65,7 +65,7 @@ const Checkout = () => {
       const { error: dbError } = await supabase.from('ads').insert([
         {
           title: formData.title,
-          scope_id: ['Szkoła Podstawowa', 'Technikum/Liceum', 'Szkoła zawodowa', 'Studia'].indexOf(formData.category) + 1,
+          scope_id: formData.category,
           subject_id: formData.subject,
           price: parseFloat(formData.price),
           user_id: userId,
@@ -74,6 +74,8 @@ const Checkout = () => {
           address: formData.address,
           latitude: formData.latitude,
           longitude: formData.longitude,
+          isRemote: formData.isRemote,
+          isInPerson: formData.isInPerson
         },
       ]);
 

@@ -25,6 +25,7 @@ const Screen = () => {
   const [maxDistance, setMaxDistance] = useState(null);
   const [minRating, setMinRating] = useState(null);
   const [minReviewCount, setMinReviewCount] = useState(null);
+  const [searchTitle, setSearchTitle] = useState('');
 
   useEffect(() => {
     fetchAds();
@@ -99,7 +100,7 @@ const Screen = () => {
     return R * c;
   };
 
-  const filterAds = (subject, category, distance, remote, inPerson, minRating, minReviewCount) => {
+  const filterAds = (subject, category, distance, remote, inPerson, minRating, minReviewCount, title) => {
     let filtered = ads;
 
     if (subject && subject !== ' ') {
@@ -133,47 +134,56 @@ const Screen = () => {
       filtered = filtered.filter((ad) => ad.reviewCount >= minReviewCount);
     }
 
+    if (title && title.trim() !== '') {
+      filtered = filtered.filter((ad) => ad.title.toLowerCase().includes(title.toLowerCase()));
+    }
+
     setFilteredAds(filtered);
+  };
+
+  const handleSearchTitleChange = (title) => {
+    setSearchTitle(title);
+    filterAds(selectedSubject, selectedCategory, maxDistance, isRemote, isInPerson, minRating, minReviewCount, title);
   };
 
   const handleSubjectChange = (subject) => {
     setSelectedSubject(subject);
-    filterAds(subject, selectedCategory, maxDistance, isRemote, isInPerson, minRating, minReviewCount);
+    filterAds(subject, selectedCategory, maxDistance, isRemote, isInPerson, minRating, minReviewCount, searchTitle);
   };
 
   const handleCategoryChange = (category) => {
     setSelectedCategory(category);
-    filterAds(selectedSubject, category, maxDistance, isRemote, isInPerson, minRating, minReviewCount);
+    filterAds(selectedSubject, category, maxDistance, isRemote, isInPerson, minRating, minReviewCount, searchTitle);
   };
 
   const handleDistanceChange = (distance) => {
     const distanceValue = parseFloat(distance);
     setMaxDistance(isNaN(distanceValue) ? null : distanceValue);
-    filterAds(selectedSubject, selectedCategory, distanceValue, isRemote, isInPerson, minRating, minReviewCount);
+    filterAds(selectedSubject, selectedCategory, distanceValue, isRemote, isInPerson, minRating, minReviewCount, searchTitle);
   };
 
   const handleRatingChange = (rating) => {
     const ratingValue = parseFloat(rating);
     setMinRating(isNaN(ratingValue) ? null : ratingValue);
-    filterAds(selectedSubject, selectedCategory, maxDistance, isRemote, isInPerson, ratingValue, minReviewCount);
+    filterAds(selectedSubject, selectedCategory, maxDistance, isRemote, isInPerson, ratingValue, minReviewCount, searchTitle);
   };
 
   const handleReviewCountChange = (count) => {
     const countValue = parseInt(count);
     setMinReviewCount(isNaN(countValue) ? null : countValue);
-    filterAds(selectedSubject, selectedCategory, maxDistance, isRemote, isInPerson, minRating, countValue);
+    filterAds(selectedSubject, selectedCategory, maxDistance, isRemote, isInPerson, minRating, countValue, searchTitle);
   };
 
   const handleRemoteChange = () => {
     const newValue = !isRemote;
     setIsRemote(newValue);
-    filterAds(selectedSubject, selectedCategory, maxDistance, newValue, isInPerson, minRating, minReviewCount);
+    filterAds(selectedSubject, selectedCategory, maxDistance, newValue, isInPerson, minRating, minReviewCount, searchTitle);
   };
 
   const handleInPersonChange = () => {
     const newValue = !isInPerson;
     setIsInPerson(newValue);
-    filterAds(selectedSubject, selectedCategory, maxDistance, isRemote, newValue, minRating, minReviewCount);
+    filterAds(selectedSubject, selectedCategory, maxDistance, isRemote, newValue, minRating, minReviewCount, searchTitle);
   };
 
   const clearFilters = () => {
@@ -184,11 +194,21 @@ const Screen = () => {
     setIsInPerson(false);
     setMinRating(null);
     setMinReviewCount(null);
+    setSearchTitle('');
     setFilteredAds(ads); // Resetowanie filtrów
   };
 
   return (
     <View style={styles.container}>
+      <View style={styles.searchContainer}>
+        <TextInput
+          style={styles.searchInput}
+          placeholder="Wyszukaj po nazwie ogłoszenia"
+          value={searchTitle}
+          onChangeText={handleSearchTitleChange}
+        />
+      </View>
+
       <TouchableOpacity style={styles.filterButton} onPress={() => setIsModalVisible(true)}>
         <Text style={styles.filterButtonText}>Filtry</Text>
       </TouchableOpacity>
@@ -317,6 +337,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#F5F5F5',
     paddingTop: 10,
+  },
+  searchContainer: {
+    padding: 10,
+  },
+  searchInput: {
+    borderWidth: 1,
+    borderColor: '#DDD',
+    borderRadius: 5,
+    padding: 10,
+    backgroundColor: '#FFF',
   },
   filterButton: {
     padding: 15,
@@ -457,7 +487,6 @@ const styles = StyleSheet.create({
     padding: 10,
   },
 
-  
 });
 
 export default Screen;
